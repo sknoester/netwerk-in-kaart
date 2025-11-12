@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Netwerk Bemoeizorg Flevoland – Ive/Rams v12</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#0b1220;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#1f2937;
+      --accent:#2563eb;
+
+      --text-base:14px;
+      --text-sm:12px;
+      --text-xs:11px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Noto Sans',sans-serif;
+      background:radial-gradient(circle at top,#1f2937,#020617 55%);
+      color:var(--text);
+      font-size:var(--text-base);
+      transition:background .35s ease,color .25s ease;
+    }
+
+    body.light{
+      --bg:#edf2ff;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --line:#d4d4d8;
+      --accent:#2563eb;
+
+      background:
+        radial-gradient(circle at top,#eff6ff 0,#f9fafb 55%),
+        #f3f4f6;
+      color:var(--text);
+    }
+
+    .wrap{max-width:1100px;margin:auto;padding:18px 16px}
+    .row{display:flex;align-items:center;gap:10px}
+
+    .card{
+      background:radial-gradient(circle at top,#0b1120,#020617 60%);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:0 14px 30px rgba(15,23,42,.6);
+      transition:
+        box-shadow .25s ease,
+        background .25s ease,
+        border-color .25s ease,
+        transform .18s ease;
+    }
+    body.light .card{
+      background:
+        linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98));
+      border-color:rgba(148,163,184,0.6);
+      box-shadow:
+        0 14px 30px rgba(148,163,184,0.35),
+        0 0 0 1px rgba(255,255,255,0.9);
+      backdrop-filter:blur(14px);
+    }
+
+    .card .inner{padding:16px}
+    .grid{display:grid;gap:12px}
+    .filters{grid-template-columns:1fr}
+
+    @media(min-width:900px){
+      .filters{grid-template-columns:1.1fr 1.1fr}
+      .filters-search{grid-column:1 / -1}
+      .filters-bottom{
+        grid-column:1 / -1;
+        display:grid;
+        grid-template-columns:1.1fr 1.1fr;
+        gap:12px;
+        align-items:flex-start;
+        margin-top:4px;
+        transform:translate(-6px,-4px); /* klein beetje naar links en boven */
+      }
+      .results{grid-template-columns:repeat(3,minmax(0,1fr))}
+    }
+    @media(max-width:899px){
+      .filters-bottom{display:grid;grid-template-columns:1fr;gap:12px}
+      .results{grid-template-columns:1fr}
+    }
+
+    /* Sterkere, contrastrijkere labels */
+    .pill-label{
+      font-size:var(--text-xs);
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:#e5e7eb;
+      font-weight:600;
+      margin:8px 0 6px;
+      text-shadow:0 0 6px rgba(15,23,42,0.85);
+    }
+    body.light .pill-label{
+      color:#111827;
+      text-shadow:none;
+    }
+
+    .intro-title{
+      font-size:16px;
+      font-weight:600;
+      margin:0 0 4px;
+    }
+    .intro-text{
+      font-size:13px;
+      color:var(--muted);
+      margin:0;
+      line-height:1.4;
+    }
+
+    .filters-search-row{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .search-block{width:100%}
+
+    /* Extra ruimte onder de rij met de thema-knop boven de zoekbalk */
+    .search-block > .row:first-child {
+      margin-bottom:10px !important;
+    }
+
+    /* Introblok zonder paneel eromheen */
+    .intro-block{
+      margin-top:8px;
+    }
+    @media(min-width:900px){
+      .filters-search-row{
+        flex-direction:row;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:16px;
+      }
+      .search-block{
+        flex:1;
+        min-width:0;
+      }
+      .intro-block{
+        max-width:320px;
+        flex-shrink:0;
+        text-align:right;
+      }
+    }
+
+    /* Logo’s direct onder de tekst, zonder kader */
+    .intro-logos-row{
+      margin-top:10px;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+      gap:10px;
+      opacity:0.7;
+      filter:saturate(1.1) brightness(1.05);
+    }
+    .intro-logos-row img{
+      height:30px;
+      width:auto;
+      display:block;
+      flex-shrink:0;
+    }
+    body.light .intro-logos-row{
+      opacity:0.85;
+      mix-blend-mode:multiply;
+      filter:saturate(1.1) brightness(1.05);
+    }
+
+    /* Nieuwe thema-toggle (🌙 / ☀️) */
+    .theme-toggle{
+      border:none;
+      background:transparent;
+      padding:0;
+      cursor:pointer;
+    }
+    .theme-toggle-track{
+      position:relative;
+      width:44px;
+      height:22px;
+      border-radius:999px;
+      background:linear-gradient(135deg,#020617,#111827);
+      border:1px solid rgba(148,163,184,0.6);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 4px;
+      box-shadow:0 3px 8px rgba(15,23,42,0.55);
+      transition:
+        background .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
+    }
+    .theme-toggle-thumb{
+      position:absolute;
+      top:50%;
+      left:4px;
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      background:#e5e7eb;
+      transform:translate(0,-50%);
+      box-shadow:0 2px 6px rgba(15,23,42,0.8);
+      transition:transform .22s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .theme-toggle-icon{
+      font-size:13px;
+      opacity:0.65;
+      transition:opacity .2s ease, transform .2s ease;
+      transform:translateY(1px);
+    }
+
+    body:not(.light) .theme-toggle-icon-moon{opacity:1;}
+    body:not(.light) .theme-toggle-icon-sun{opacity:0.35;}
+
+    /* subtielere lichte modus */
+    body.light .theme-toggle-track{
+      background:linear-gradient(135deg,#f9fafb,#ffffff);
+      border-color:#e5e7eb;
+      box-shadow:0 1px 4px rgba(148,163,184,0.35);
+    }
+    body.light .theme-toggle-thumb{
+      transform:translate(20px,-50%);
+      background:#e5e7eb;
+      box-shadow:0 1px 3px rgba(148,163,184,0.6);
+    }
+    body.light .theme-toggle-icon-moon{opacity:0.35;}
+    body.light .theme-toggle-icon-sun{opacity:1;}
+
+    .theme-toggle:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:3px;
+    }
+
+    /* INPUT */
+    .input{
+      position:relative;
+      border-radius:999px;
+      padding:1px;
+      background:rgba(15,23,42,0.9);
+      border:1px solid rgba(148,163,184,0.6);
+      transition:
+        box-shadow .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+    }
+    .input input{
+      width:100%;
+      padding:10px 12px 10px 34px;
+      border-radius:999px;
+      font-size:var(--text-base);
+      border:none;
+      background:rgba(15,23,42,0.98);
+      color:var(--text);
+      box-shadow:0 1px 2px rgba(15,23,42,0.9);
+      outline:none;
+    }
+    .input input::placeholder{color:#64748b}
+
+    .input:hover,
+    .input:focus-within{
+      background:rgba(15,23,42,1);
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(37,99,235,0.4);
+    }
+
+    .icon{
+      position:absolute;
+      left:10px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#6b7280;
+      transition:color .18s ease, opacity .18s ease;
+    }
+    .input:hover .icon,
+    .input:focus-within .icon{
+      color:#e5e7eb;
+      opacity:0.9;
+    }
+
+    body.light .input{
+      background:rgba(255,255,255,0.9);
+      box-shadow:0 4px 10px rgba(148,163,184,0.35);
+      backdrop-filter:blur(12px);
+      border-color:#d1d5db;
+    }
+    body.light .input input{
+      background:transparent;
+      border:none;
+      box-shadow:none;
+      color:#0f172a;
+    }
+    body.light .input:hover,
+    body.light .input:focus-within{
+      box-shadow:0 6px 16px rgba(148,163,184,0.5);
+      border-color:#2563eb;
+    }
+    body.light .input:hover .icon,
+    body.light .input:focus-within .icon{
+      color:#1f2937;
+    }
+
+    /* CHIPS */
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{
+      border:1px solid var(--line);
+      background:rgba(15,23,42,0.94);
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:var(--text-sm);
+      cursor:pointer;
+      user-select:none;
+      color:var(--muted);
+      transition:
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease,
+        box-shadow .18s ease,
+        transform .12s ease;
+    }
+    .chip:hover{
+      background:rgba(15,23,42,1);
+      border-color:rgba(37,99,235,0.8);
+      color:#e5e7eb;
+      box-shadow:0 4px 10px rgba(15,23,42,0.6);
+      transform:translateY(-1px);
+    }
+    .chip.active{
+      background:rgba(15,23,42,1);
+      color:#e5e7eb;
+      border-color:var(--chip-color, var(--accent));
+      box-shadow:0 0 0 1px var(--chip-color, var(--accent));
+    }
+
+    body.light .chip{
+      background:rgba(248,250,252,0.95);
+      border-color:#e5e7eb;
+      color:#4b5563;
+      box-shadow:0 4px 10px rgba(148,163,184,0.25);
+    }
+    body.light .chip:hover{
+      background:#eef2ff;
+      border-color:#c4b5fd;
+      box-shadow:0 6px 14px rgba(148,163,184,0.35);
+      color:#111827;
+    }
+    body.light .chip.active{
+      background:#e0e7ff;
+      border-color:var(--chip-color, var(--accent));
+      color:#1d4ed8;
+      box-shadow:0 0 0 1px var(--chip-color, var(--accent));
+    }
+
+    /* ORG-CHIPS */
+    .org-chip{
+      display:inline-flex;
+      align-items:center;
+      padding:5px 12px 5px 8px;
+    }
+    .org-chip .org-logo{
+      width:18px;
+      height:18px;
+      border-radius:16px;
+      background:radial-gradient(circle at 30% 20%,#1f2937,#020617);
+      border:1px solid rgba(148,163,184,0.7);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:9px;
+      font-weight:600;
+      margin-right:6px;
+      color:#e5e7eb;
+      box-shadow:0 1px 3px rgba(15,23,42,0.7);
+      flex-shrink:0;
+    }
+    .org-chip .org-label{
+      white-space:nowrap;
+    }
+    .org-chip.active .org-logo{
+      border-color:var(--chip-color, #38bdf8);
+      box-shadow:0 0 8px rgba(56,189,248,0.5);
+      background:radial-gradient(circle at 30% 20%,#0ea5e9,#1d4ed8);
+    }
+
+    body.light .org-chip .org-logo{
+      background:radial-gradient(circle at 30% 20%,#e5e7eb,#cbd5f5);
+      border-color:#93c5fd;
+      color:#1e3a8a;
+      box-shadow:0 1px 3px rgba(191,219,254,0.9);
+    }
+    body.light .org-chip.active .org-logo{
+      background:radial-gradient(circle at 30% 20%,#60a5fa,#2563eb);
+      border-color:#2563eb;
+      color:#eff6ff;
+      box-shadow:0 0 6px rgba(37,99,235,0.6);
+    }
+
+    /* Logo in kaartjes en dialoog */
+    .org-logo-card{
+      width:22px;
+      height:22px;
+      border-radius:999px;
+      object-fit:contain;
+      background:#0f172a;
+      padding:2px;
+      box-shadow:0 1px 3px rgba(15,23,42,0.7);
+      flex-shrink:0;
+    }
+    body.light .org-logo-card{
+      background:#ffffff;
+      box-shadow:0 1px 3px rgba(148,163,184,0.45);
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:var(--text-sm);
+    }
+
+    /* BUTTONS */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--line);
+      background:rgba(15,23,42,0.96);
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:var(--text-sm);
+      cursor:pointer;
+      color:var(--text);
+      transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        box-shadow .18s ease,
+        transform .12s ease;
+    }
+    .btn.ghost{
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      box-shadow:none;
+    }
+    .btn.ghost:hover{
+      color:var(--text);
+      background:rgba(148,163,184,0.08);
+    }
+
+    .btn.primary{
+      background:rgba(37,99,235,0.14);
+      border-color:rgba(129,140,248,0.9);
+      color:#e5e7eb;
+      box-shadow:none;
+    }
+    .btn.primary:hover{
+      background:rgba(37,99,235,0.22);
+      box-shadow:0 0 0 1px rgba(129,140,248,0.7);
+      transform:translateY(-1px);
+    }
+    .btn.call{
+      background:rgba(22,163,74,0.16);
+      border-color:rgba(74,222,128,0.9);
+      color:#bbf7d0;
+      box-shadow:none;
+    }
+    .btn.call:hover{
+      background:rgba(22,163,74,0.25);
+      box-shadow:0 0 0 1px rgba(74,222,128,0.7);
+      transform:translateY(-1px);
+    }
+
+    body.light .btn{
+      background:#f9fafb;
+      border-color:#d4d4d8;
+      color:#111827;
+      box-shadow:0 4px 12px rgba(148,163,184,0.35);
+      backdrop-filter:blur(10px);
+    }
+    body.light .btn.primary{
+      background:#e0e7ff;
+      border-color:#6366f1;
+      color:#1d4ed8;
+      box-shadow:none;
+    }
+    body.light .btn.call{
+      background:#dcfce7;
+      border-color:#16a34a;
+      color:#166534;
+      box-shadow:none;
+    }
+
+    .btn:active,
+    .chip:active,
+    .city:active,
+    .filter-chip:active,
+    .card.person:active{
+      transform:translateY(1px) scale(0.98);
+      box-shadow:0 2px 6px rgba(0,0,0,0.35);
+    }
+
+    .results{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .card.person{
+      opacity:0;
+      transform:translateY(4px);
+      transition:
+        opacity .18s ease-out,
+        transform .18s ease-out,
+        box-shadow .15s ease,
+        border-color .15s ease,
+        background .2s ease;
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,.2);
+      background:radial-gradient(circle at top,#111827,#020617 60%);
+      cursor:pointer;
+    }
+    .card.person.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .card.person:hover{
+      transform:translateY(-2px);
+      box-shadow:0 16px 34px rgba(15,23,42,.75);
+      border-color:var(--accent);
+    }
+
+    body.light .card.person{
+      background:
+        linear-gradient(135deg,rgba(255,255,255,0.98),rgba(248,250,252,0.98));
+      border-color:#e5e7eb;
+      box-shadow:
+        0 14px 30px rgba(148,163,184,0.35),
+        0 0 0 1px rgba(255,255,255,0.9);
+    }
+    body.light .card.person:hover{
+      border-color:#c4b5fd;
+      box-shadow:
+        0 18px 38px rgba(148,163,184,0.5),
+        0 0 0 1px rgba(255,255,255,1);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:2px 9px;
+      font-size:var(--text-xs);
+      background:rgba(15,23,42,0.9);
+      color:var(--muted);
+    }
+    body.light .badge{
+      background:#f9fafb;
+      border-color:#e5e7eb;
+      color:#4b5563;
+    }
+
+    .badge.location{
+      font-size:var(--text-xs);
+      background:rgba(15,23,42,0.95);
+      color:#f9fafb;
+      border-color:#ef4444;
+      white-space:nowrap;
+    }
+    body.light .badge.location{
+      background:#fef2f2;
+      color:#b91c1c;
+      border-color:#ef4444;
+    }
+
+    .stack{display:flex;flex-direction:column;gap:6px}
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+      align-items:center;
+    }
+    .actions .primary-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    a{text-decoration:none;color:inherit}
+
+    footer{
+      color:var(--muted);
+      font-size:var(--text-xs);
+      padding:24px 0;
+      text-align:center;
+    }
+
+    dialog{
+      border:none;
+      border-radius:20px;
+      max-width:520px;
+      width:calc(100% - 32px);
+      padding:0;
+      box-shadow:0 20px 50px rgba(0,0,0,.45);
+      background:radial-gradient(circle at top,#111827,#020617 65%);
+      color:var(--text);
+    }
+    body.light dialog{
+      background:
+        radial-gradient(circle at top,#ffffff,#e5e7eb 65%);
+      box-shadow:
+        0 20px 40px rgba(148,163,184,.45),
+        0 0 0 1px rgba(255,255,255,0.9);
+      backdrop-filter:blur(14px);
+    }
+    dialog .inner{padding:18px 16px}
+    dialog::backdrop{background:rgba(15,23,42,.75)}
+    body.light dialog::backdrop{background:rgba(15,23,42,.35)}
+
+    .k{
+      width:44px;
+      height:44px;
+      border-radius:16px;
+      background:radial-gradient(circle at 30% 20%,#1f2937,#020617);
+      display:grid;
+      place-items:center;
+      margin-right:10px;
+      font-size:18px;
+    }
+    body.light .k{
+      background:radial-gradient(circle at 30% 20%,#e5e7eb,#cbd5f5);
+    }
+
+    .tiny{
+      font-size:var(--text-xs);
+      color:var(--muted);
+    }
+
+    /* Wrapper om kaart + label, zodat label precies boven kaart uitlijnt */
+    .map-wrapper{
+      max-width:380px;
+      margin:0 auto;
+    }
+
+    .map-panel{
+      border-radius:16px;
+      background:radial-gradient(circle at top,#0b1120,#020617 70%);
+      padding:10px 20px 14px;
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      box-shadow:0 10px 24px rgba(15,23,42,0.7);
+    }
+    body.light .map-panel{
+      background:rgba(255,255,255,0.96);
+      box-shadow:0 14px 30px rgba(148,163,184,0.35);
+      border:1px solid #e5e7eb;
+    }
+
+    .province{
+      position:relative;
+      width:100%;
+      max-width:340px;
+      aspect-ratio:121/71;
+      margin:0 auto;
+      background-image:url("bemoeizorg-netwerk-logo.png");
+      background-size:contain;
+      background-position:center center;
+      background-repeat:no-repeat;
+      border:none;
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:none;
+      font-size:16px;
+    }
+    body.light .province{
+      box-shadow:none;
+      background-color:transparent;
+    }
+
+    .city{
+      position:absolute;
+      transform:translate(-50%,-50%);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:0.4em;
+      user-select:none;
+      z-index:2;
+      padding:0.1em 0.4em;
+      border-radius:999px;
+      border:none;
+      background:transparent;
+      transition:
+        transform .12s ease,
+        background .15s ease,
+        box-shadow .15s ease;
+    }
+    .city-dot{
+      width:0.78em;
+      height:0.78em;
+      border-radius:50%;
+      background:#3b82f6;
+      flex-shrink:0;
+      box-shadow:0 0 0 0.14em rgba(15,23,42,0.9);
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .city-label{
+      font-size:0.86em;
+      color:#e5e7eb;
+      font-weight:500;
+      white-space:nowrap;
+      text-shadow:0 1px 2px #020617;
+      transition:text-shadow .12s ease, color .12s ease;
+    }
+    .city:hover{
+      transform:translate(-50%,-50%) scale(1.05);
+      background:rgba(15,23,42,0.7);
+      box-shadow:0 0 0 0.16em rgba(37,99,235,0.35);
+    }
+    .city:hover .city-dot{
+      transform:scale(1.1);
+      box-shadow:0 0 0 0.2em rgba(37,99,235,.55);
+    }
+    .city:hover .city-label{
+      text-shadow:0 0 4px rgba(255,255,255,.4);
+    }
+    .city.active{
+      transform:translate(-50%,-50%) scale(1.05);
+      background:rgba(15,23,42,0.9);
+      box-shadow:0 0 0 0.2em rgba(37,99,235,0.7);
+    }
+    .city.active .city-dot{
+      background:#2563eb;
+      box-shadow:0 0 0 0.2em rgba(37,99,235,.75);
+    }
+    .city.active .city-label{
+      color:#f9fafb;
+      text-shadow:0 0 6px rgba(248,250,252,0.9);
+    }
+
+    body.light .city-label{
+      color:#0f172a;
+      text-shadow:none;
+    }
+    body.light .city-dot{
+      background:#3b82f6;
+      box-shadow:0 0 0 0.14em rgba(148,163,184,0.9);
+    }
+    body.light .city:hover{
+      background:rgba(243,244,246,0.95);
+      box-shadow:0 0 0 0.16em rgba(148,163,184,0.7);
+    }
+    body.light .city:hover .city-dot{
+      box-shadow:0 0 0 0.18em rgba(148,163,184,0.9);
+    }
+    body.light .city:hover .city-label{
+      color:#111827;
+      text-shadow:0 0 3px rgba(209,213,219,0.75);
+    }
+    body.light .city.active{
+      background:rgba(229,231,235,0.98);
+      box-shadow:0 0 0 0.2em rgba(148,163,184,0.9);
+    }
+    body.light .city.active .city-dot{
+      background:#1d4ed8;
+      box-shadow:0 0 0 0.2em rgba(148,163,184,1);
+    }
+    body.light .city.active .city-label{
+      color:#111827;
+      text-shadow:0 0 5px rgba(229,231,235,0.95);
+    }
+
+    .my-note{
+      width:100%;
+      min-height:70px;
+      margin-top:4px;
+      resize:vertical;
+      border-radius:10px;
+      border:1px solid #1f2937;
+      background:rgba(15,23,42,0.9);
+      color:var(--text);
+      padding:6px 8px;
+      font-size:var(--text-sm);
+    }
+    body.light .my-note{
+      border-color:#e5e7eb;
+      background:#ffffff;
+      color:#111827;
+      box-shadow:0 4px 10px rgba(148,163,184,0.25);
+    }
+
+    #activeFilters{
+      color:var(--muted);
+      font-size:var(--text-xs);
+      margin-top:4px;
+      min-height:18px;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:4px;
+    }
+    #activeFilters strong{
+      color:var(--text);
+      margin-right:2px;
+      font-size:var(--text-xs);
+    }
+    .filter-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(15,23,42,0.9);
+      font-size:var(--text-xs);
+      color:var(--text);
+      cursor:pointer;
+      margin-top:2px;
+    }
+    body.light .filter-chip{
+      background:#f9fafb;
+      border-color:#e5e7eb;
+      color:#111827;
+    }
+
+    #count{
+      font-size:var(--text-sm);
+    }
+
+    @keyframes countPulse {
+      0%   { transform:scale(1);   color:var(--muted); }
+      40%  { transform:scale(1.06); color:var(--text); }
+      100% { transform:scale(1);   color:var(--muted); }
+    }
+    #count.pulse { animation:countPulse .3s ease-out; }
+
+    @keyframes resetFlash{
+      0%{box-shadow:0 0 0 0 rgba(56,189,248,0)}
+      50%{box-shadow:0 0 0 6px rgba(56,189,248,0.35)}
+      100%{box-shadow:0 0 0 0 rgba(56,189,248,0)}
+    }
+    .card.resetting{
+      animation:resetFlash .55s ease-out;
+    }
+
+    /* extra ruimte tussen expertise en organisatie */
+    #skills + .pill-label{
+      margin-top:16px;
+    }
+
+    .btn:focus-visible,
+    .chip:focus-visible,
+    .city:focus-visible,
+    .filter-chip:focus-visible,
+    .card.person:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration:0.01ms !important;
+        animation-iteration-count:1 !important;
+        transition:none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<main class="wrap">
+  <section class="card" id="filtersCard">
+    <div class="inner grid filters">
+
+      <!-- Zoekbalk + intro -->
+      <div class="filters-search">
+        <div class="filters-search-row">
+
+          <div class="search-block">
+            <div class="row" style="justify-content:flex-start;gap:8px;">
+              <!-- Nieuwe subtiele thema-toggle -->
+              <button
+                id="themeToggle"
+                class="theme-toggle"
+                type="button"
+                aria-label="Schakel tussen donker en licht thema"
+              >
+                <span class="theme-toggle-track">
+                  <span class="theme-toggle-thumb"></span>
+                  <span class="theme-toggle-icon theme-toggle-icon-moon">🌙</span>
+                  <span class="theme-toggle-icon theme-toggle-icon-sun">☀️</span>
+                </span>
+              </button>
+            </div>
+
+            <div class="pill-label">Zoekterm</div>
+            <div class="input">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input id="q" placeholder="Naam, organisatie, trefwoord…" />
+            </div>
+            <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px">
+              <div class="row muted" id="count"></div>
+              <button class="btn ghost" id="clearBtn">Wissen</button>
+            </div>
+            <div id="activeFilters" class="tiny"></div>
+          </div>
+
+          <!-- Welkomsttekst + logo’s zonder paneel -->
+          <div class="intro-block">
+            <h1 class="intro-title">Netwerk Bemoeizorg Flevoland</h1>
+            <p class="intro-text">
+              Vind snel collega’s op naam, organisatie, expertise of gemeente.
+            </p>
+            <div class="intro-logos-row" aria-hidden="true">
+              <img src="logo-legerdesheils.png" alt="">
+              <img src="logo-triadevitree.png" alt="">
+              <img src="logo-amethist.png" alt="">
+              <img src="logo-kwintes.png" alt="">
+              <img src="logo-ggd-flevoland.png" alt="">
+              <img src="logo-ggz-centraal.png" alt="">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Kaart + filters -->
+      <div class="filters-bottom">
+
+        <!-- Kaart-kolom -->
+        <div>
+          <div class="map-wrapper">
+            <div class="pill-label">Klik op een plaats om te filteren</div>
+            <div class="map-panel">
+              <div class="province" id="province">
+
+                <button class="city" type="button" data-city="Almere"
+                        style="left: 30.58%; top: 77.11%;" aria-pressed="false">
+                  <div class="city-dot"></div>
+                  <div class="city-label">Almere</div>
+                </button>
+
+                <button class="city" type="button" data-city="Lelystad"
+                        style="left: 40.70%; top: 63.73%;" aria-pressed="false">
+                  <div class="city-dot"></div>
+                  <div class="city-label">Lelystad</div>
+                </button>
+
+                <button class="city" type="button" data-city="Dronten"
+                        style="left: 55.79%; top: 55.28%;" aria-pressed="false">
+                  <div class="city-dot"></div>
+                  <div class="city-label">Dronten</div>
+                </button>
+
+                <button class="city" type="button" data-city="Zeewolde"
+                        style="left: 47.93%; top: 86.27%;" aria-pressed="false">
+                  <div class="city-dot"></div>
+                  <div class="city-label">Zeewolde</div>
+                </button>
+
+                <button class="city" type="button" data-city="Urk"
+                        style="left: 49.59%; top: 33.45%;" aria-pressed="false">
+                  <div class="city-dot"></div>
+                  <div class="city-label">Urk</div>
+                </button>
+
+                <button class="city" type="button" data-city="Noordoostpolder"
+                        style="left: 66.53%; top: 21.48%;" aria-pressed="false">
+                  <div class="city-dot"></div>
+                  <div class="city-label">Noordoostpolder</div>
+                </button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expertise + organisatie-kolom -->
+        <div>
+          <div class="pill-label">Expertise</div>
+          <div id="skills" class="chips"></div>
+
+          <div class="pill-label">Organisatie</div>
+          <div id="orgs" class="chips"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="results" id="results"></div>
+  </section>
+
+  <footer>
+    Prototype – demo-data, niet voor productie. Laatst geladen: <span id="stamp"></span>
+  </footer>
+</main>
+
+<!-- Detaildialoog -->
+<dialog id="dlg">
+  <div class="inner">
+    <div class="row" style="align-items:flex-start">
+      <div class="k">👤</div>
+      <div class="stack" style="flex:1">
+        <h2 id="dlg_name" style="margin:0;"></h2>
+
+        <div class="muted" id="dlg_org_row" style="display:flex;align-items:center;gap:8px;">
+          <img id="dlg_org_logo" class="org-logo-card" src="" alt="" style="display:none;">
+          <span id="dlg_org"></span>
+        </div>
+
+        <div class="muted" id="dlg_role"></div>
+        <div class="muted" id="dlg_city" style="margin-top:4px;"></div>
+        <div id="dlg_tags" class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px"></div>
+        <p id="dlg_notes" style="margin:10px 0 0;line-height:1.5"></p>
+
+        <button class="btn ghost" type="button" id="noteToggle" style="margin-top:12px;padding:4px 8px;">
+          📝 Mijn notitie toevoegen
+        </button>
+        <div id="noteWrapper" style="display:none;margin-top:6px;">
+          <div class="tiny">
+            Mijn notitie (alleen zichtbaar voor jou op dit apparaat)
+          </div>
+          <textarea id="dlg_my_note" class="my-note"></textarea>
+        </div>
+
+        <div class="actions" style="margin-top:12px">
+          <div class="primary-actions">
+            <a id="dlg_tel"  class="btn call" href="#">📞 Bel</a>
+            <a id="dlg_mail" class="btn primary" href="#">✉️ Mail</a>
+          </div>
+          <button class="btn" type="button" onclick="document.getElementById('dlg').close()">Sluiten</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const EXPERTISE = [
+    { key: "Psychiatrie",              icon: "🧠", color: "#2563eb" },
+    { key: "Verslaving",               icon: "🧪", color: "#7c3aed" },
+    { key: "NAH",                      icon: "🧩", color: "#f97316" },
+    { key: "Dakloosheid",              icon: "🏠", color: "#f59e0b" },
+    { key: "Jeugd",                    icon: "👪", color: "#22c55e" },
+    { key: "Forensisch",               icon: "⭐",  color: "#eab308" },
+    { key: "Verstandelijke beperking", icon: "🧩", color: "#ec4899" },
+    { key: "Huiselijk geweld",         icon: "🛑", color: "#ef4444" },
+    { key: "Woonoverlast",             icon: "🚪", color: "#0ea5e9" },
+    { key: "Wijkagent",                icon: "👮", color: "#22d3ee" },
+    { key: "Ervaringsdeskundigheid",   icon: "🤝", color: "#14b8a6" }
+  ];
+
+  const ORGANISATIONS = [
+    { key: "GGD",             label: "GGD Flevoland",        abbr: "GGD", logo: "logo-ggd-flevoland.png" },
+    { key: "Leger des Heils", label: "Leger des Heils",      abbr: "LDH", logo: "logo-legerdesheils.png" },
+    { key: "Kwintes",         label: "Kwintes",              abbr: "KW",  logo: "logo-kwintes.png" },
+    { key: "Triade Vitree",   label: "Triade Vitree",        abbr: "TV",  logo: "logo-triadevitree.png" },
+    { key: "GGZ Centraal",    label: "GGZ Centraal",         abbr: "GGZ", logo: "logo-ggz-centraal.png" },
+    { key: "Amethist",        label: "Amethist",             abbr: "AM",  logo: "logo-amethist.png" },
+    { key: "ForFact",         label: "ForFact",              abbr: "FF"  },
+    { key: "wijkteam",        label: "Wijkteam",             abbr: "WT"  },
+    { key: "politie",         label: "Politie",              abbr: "POL" }
+  ];
+
+  function findOrgMeta(orgName) {
+    if (!orgName) return null;
+    const lower = orgName.toLowerCase();
+    return ORGANISATIONS.find(o =>
+      lower.includes(o.key.toLowerCase()) ||
+      lower.includes((o.label || "").toLowerCase())
+    ) || null;
+  }
+
+  const iconFor  = name => (EXPERTISE.find(x => x.key === name)?.icon)  || "🔹";
+  const colorFor = name => (EXPERTISE.find(x => x.key === name)?.color) || "#6b7280";
+
+  const DATA = [
+    {id:"1",  name:"Tamar de Vries",     org:"Amethist Verslavingszorg", role:"Regiocoördinator",              phone:"+31 6 1234 5678", email:"tamar@amethist.example",      city:"Lelystad",        expertise:["Verslaving","Psychiatrie","Ervaringsdeskundigheid"],              notes:"Comorbide casuïstiek; outreachend werk."},
+    {id:"2",  name:"Jeroen van Leeuwen", org:"Leger des Heils",          role:"Teamleider Bemoeizorg",        phone:"+31 6 8765 4321", email:"jeroen@ldh.example",            city:"Almere",          expertise:["Dakloosheid","Psychiatrie","Woonoverlast"]},
+    {id:"3",  name:"Sanne Bos",          org:"GGD Flevoland",            role:"Verpleegkundige GGZ",          city:"Lelystad",        expertise:["Psychiatrie","Ervaringsdeskundigheid"],              email:"s.bos@ggd.example"},
+    {id:"4",  name:"Ahmed Karami",       org:"Ziekenhuis XYZ",           role:"Revalidatiearts",              city:"Almere",          expertise:["NAH","Verstandelijke beperking"]},
+    {id:"5",  name:"Lotte Meijer",       org:"Jeugdteam Almere (wijkteam)", role:"Jeugd- en gezinsprofessional", city:"Almere",       expertise:["Jeugd","Psychiatrie","Huiselijk geweld"]},
+    {id:"6",  name:"Pieter Groen",       org:"RIBW",                     role:"Begeleider Wonen",             city:"Dronten",         expertise:["Psychiatrie","Dakloosheid","Woonoverlast"]},
+    {id:"7",  name:"Monique Arends",     org:"NAH Netwerk Flevo",        role:"Coördinator",                  city:"Lelystad",        expertise:["NAH","Verstandelijke beperking","Ervaringsdeskundigheid"], email:"monique@nahflevo.example"},
+    {id:"8",  name:"Bas de Ruiter",      org:"Forensische Zorg Flevo",   role:"Trajectbegeleider",            city:"Noordoostpolder", expertise:["Forensisch","Verslaving","Wijkagent"]},
+    {id:"9",  name:"Iris Koster",        org:"GGD Flevoland",            role:"Casusregisseur",               city:"Zeewolde",        expertise:["Psychiatrie","Verslaving","Huiselijk geweld"]},
+    {id:"10", name:"Willem Smit",        org:"Reclassering NL",          role:"Reclasseringswerker",          city:"Urk",             expertise:["Forensisch","Woonoverlast"]},
+    {id:"11", name:"Anja de Boer",       org:"Kwintes",                  role:"Ambulant begeleider",          city:"Almere",          expertise:["Dakloosheid","Woonoverlast","Huiselijk geweld","Ervaringsdeskundigheid"]},
+    {id:"12", name:"Marco Jansen",       org:"Kwintes",                  role:"Wooncoach",                    city:"Dronten",         expertise:["Dakloosheid","Jeugd"]},
+    {id:"13", name:"Evelien Kramer",     org:"Politie Flevoland",        role:"Wijkagent",                    city:"Almere",          expertise:["Wijkagent","Woonoverlast","Huiselijk geweld"]},
+    {id:"14", name:"Tom van Dam",        org:"Gemeente Lelystad",        role:"Beleidsmedewerker Sociaal Domein", city:"Lelystad",  expertise:["Woonoverlast","Dakloosheid"]},
+    {id:"15", name:"Noor Aydin",         org:"Jeugdteam Lelystad (wijkteam)", role:"Jeugd- en gezinsprofessional", city:"Lelystad",   expertise:["Jeugd","Huiselijk geweld","Ervaringsdeskundigheid"]},
+    {id:"16", name:"Rik van der Meer",   org:"Amethist Verslavingszorg", role:"Verslavingsarts",              city:"Zeewolde",        expertise:["Verslaving","Psychiatrie"]},
+    {id:"17", name:"Fatima El Bakkali",  org:"GGD Flevoland",            role:"Sociaal verpleegkundige",      city:"Almere",          expertise:["Psychiatrie","Huiselijk geweld","Verstandelijke beperking"]},
+    {id:"18", name:"Koen Rietveld",      org:"RIBW",                     role:"Teamleider",                   city:"Noordoostpolder", expertise:["Dakloosheid","Forensisch"]},
+    {id:"19", name:"Linda de Graaf",     org:"Kwintes",                  role:"Gedragsdeskundige",            city:"Urk",             expertise:["Verstandelijke beperking","Jeugd"]},
+    {id:"20", name:"Janine Boon",        org:"NAH Netwerk Flevo",        role:"Consulent NAH",                city:"Dronten",         expertise:["NAH","Jeugd"]},
+    {id:"21", name:"Milan Vos",          org:"Leger des Heils",          role:"Ambulant hulpverlener",        city:"Almere",          expertise:["Dakloosheid","Verslaving","Ervaringsdeskundigheid"]},
+    {id:"22", name:"Sophie van Rijn",    org:"Reclassering NL",          role:"Toezichthouder",               city:"Lelystad",        expertise:["Forensisch","Wijkagent"]},
+    {id:"23", name:"Barry Hofman",       org:"Gemeente Zeewolde",        role:"Casusregisseur",               city:"Zeewolde",        expertise:["Woonoverlast","Dakloosheid"]},
+    {id:"24", name:"Chiara Smit",        org:"Jeugdteam Almere (wijkteam)", role:"Jeugdprofessional",        city:"Almere",          expertise:["Jeugd","Huiselijk geweld","Psychiatrie"]},
+    {id:"25", name:"Gert-Jan Mulder",    org:"Politie Flevoland",        role:"Wijkagent",                    city:"Noordoostpolder", expertise:["Wijkagent","Forensisch","Woonoverlast"]},
+    {id:"26", name:"Marieke van Lee",    org:"Triade Vitree",            role:"Ambulant begeleider",          city:"Almere",          expertise:["Jeugd","Psychiatrie","Ervaringsdeskundigheid"]},
+    {id:"27", name:"Jasper Hof",         org:"GGZ Centraal",             role:"Psychiater FACT-team",         city:"Lelystad",        expertise:["Psychiatrie","Verslaving"]},
+    {id:"28", name:"Anouar Rahmani",     org:"ForFact",                  role:"Forensisch behandelaar",       city:"Dronten",         expertise:["Forensisch","Verslaving"]},
+    {id:"29", name:"Femke de Wit",       org:"Wijkteam Urk",             role:"Sociaal werker wijkteam",      city:"Urk",             expertise:["Dakloosheid","Huiselijk geweld","Ervaringsdeskundigheid"]}
+  ];
+
+  const state = { q:"", cities:new Set(), skills:new Set(), orgs:new Set() };
+  const NOTE_KEY_PREFIX = "bemoeizorg_note_";
+  const THEME_KEY = "bemoeizorg_theme";
+
+  const el        = sel => document.querySelector(sel);
+  const resultsEl = el('#results');
+  const countEl   = el('#count');
+  const qEl       = el('#q');
+  const activeFiltersEl = el('#activeFilters');
+
+  const textMatch = (q,...fields)=>{
+    if(!q.trim()) return true;
+    const t=q.toLowerCase();
+    return fields.some(f=>(f||'').toLowerCase().includes(t));
+  };
+  const includesAll=(needles,haystack)=>
+    needles.every(n=>(haystack||[]).map(h=>h.toLowerCase()).includes(n.toLowerCase()));
+
+  function toggleSet(set,value){
+    set.has(value)?set.delete(value):set.add(value);
+    render();
+  }
+
+  function buildFilters(){
+    const skillsEl = el('#skills'); skillsEl.innerHTML='';
+    EXPERTISE.forEach(({key,icon,color})=>{
+      const b=document.createElement('button');
+      b.className='chip'+(state.skills.has(key)?' active':'');
+      b.textContent=`${icon} ${key}`;
+      b.style.setProperty('--chip-color', color);
+      b.type = 'button';
+      b.onclick=()=>toggleSet(state.skills,key);
+      skillsEl.appendChild(b);
+    });
+
+    const orgsEl = el('#orgs'); orgsEl.innerHTML='';
+    ORGANISATIONS.forEach(({key,label,abbr})=>{
+      const btn = document.createElement('button');
+      btn.className = 'chip org-chip' + (state.orgs.has(key) ? ' active' : '');
+      btn.style.setProperty('--chip-color', '#38bdf8');
+      btn.type = 'button';
+      btn.innerHTML = `
+        <span class="org-logo">${abbr}</span>
+        <span class="org-label">${label}</span>
+      `;
+      btn.onclick = () => toggleSet(state.orgs, key);
+      orgsEl.appendChild(btn);
+    });
+  }
+
+  function updateMapCities(){
+    document.querySelectorAll('.city').forEach(cityEl=>{
+      const cityName = cityEl.dataset.city;
+      const active = state.cities.has(cityName);
+      if(active) cityEl.classList.add('active');
+      else cityEl.classList.remove('active');
+      cityEl.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+
+  function updateNoteHint(id, hasNote){
+    const badge = document.querySelector(`.note-indicator[data-id="${id}"]`);
+    if(badge){
+      badge.style.display = hasNote ? 'inline-flex' : 'none';
+    }
+  }
+
+  function card(p){
+    const div=document.createElement('div');
+    div.className='card person';
+    div.tabIndex = 0;
+    div.setAttribute('role','button');
+
+    const inner=document.createElement('div');
+    inner.className='inner';
+    div.appendChild(inner);
+
+    const orgMeta = findOrgMeta(p.org);
+
+    const expBadges=(p.expertise||[])
+      .map(e=>{
+        const c=colorFor(e);
+        return `<span class="badge" style="border-color:${c};background:${c}22;">${iconFor(e)} ${e}</span>`;
+      }).join('');
+
+    inner.innerHTML=`
+      <div class="row" style="align-items:flex-start">
+        <div class="k">👥</div>
+        <div style="flex:1;min-width:0">
+          <div class="row" style="justify-content:space-between;gap:8px">
+            <div style="min-width:0">
+              <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                ${p.name}
+              </div>
+              <div class="muted" style="display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                ${orgMeta && orgMeta.logo ? `<img src="${orgMeta.logo}" alt="${orgMeta.label || ''}" class="org-logo-card">` : ''}
+                <span>${p.org || ''}</span>
+              </div>
+            </div>
+            <span class="badge location">📍 ${p.city}</span>
+          </div>
+          <div class="tiny" style="margin-top:4px">${p.role||''}</div>
+          <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px">${expBadges}</div>
+          <div class="actions">
+            <div class="primary-actions">
+              ${p.phone?`<a class="btn call" href="tel:${p.phone}">📞 Bel</a>`:''}
+              ${p.email?`<a class="btn primary" href="mailto:${p.email}">✉️ Mail</a>`:''}
+            </div>
+          </div>
+          <div class="tiny note-indicator" data-id="${p.id}" style="display:none;margin-top:4px">
+            📝 Mijn notitie opgeslagen
+          </div>
+        </div>
+      </div>`;
+
+    div.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      openDetails(p);
+    });
+    div.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (e.target.closest('a')) return;
+        e.preventDefault();
+        openDetails(p);
+      }
+    });
+
+    return div;
+  }
+
+  function openDetails(p){
+    el('#dlg_name').textContent=p.name;
+    el('#dlg_org').textContent=p.org||'';
+    el('#dlg_role').textContent=p.role||'';
+    el('#dlg_city').textContent=p.city||'';
+
+    const orgMeta = findOrgMeta(p.org);
+    const orgLogoEl = el('#dlg_org_logo');
+
+    if (orgMeta && orgMeta.logo){
+      orgLogoEl.src = orgMeta.logo;
+      orgLogoEl.alt = orgMeta.label || '';
+      orgLogoEl.style.display = 'inline-block';
+    } else {
+      orgLogoEl.style.display = 'none';
+    }
+
+    const tags=el('#dlg_tags'); tags.innerHTML='';
+    (p.expertise||[]).forEach(e=>{
+      const s=document.createElement('span');
+      const c=colorFor(e);
+      s.className='badge';
+      s.style.borderColor=c;
+      s.style.background=c+'22';
+      s.textContent = `${iconFor(e)} ${e}`;
+      tags.appendChild(s);
+    });
+    el('#dlg_notes').textContent=p.notes||'';
+
+    const noteEl = el('#dlg_my_note');
+    const noteWrapper = el('#noteWrapper');
+    const noteToggle = el('#noteToggle');
+    const stored = localStorage.getItem(NOTE_KEY_PREFIX + p.id) || "";
+    noteEl.value = stored;
+
+    if (stored.trim()) {
+      noteWrapper.style.display = 'block';
+      noteToggle.textContent = '📝 Mijn notitie bewerken';
+    } else {
+      noteWrapper.style.display = 'none';
+      noteToggle.textContent = '📝 Mijn notitie toevoegen';
+    }
+
+    noteToggle.onclick = () => {
+      const visible = noteWrapper.style.display === 'block';
+      noteWrapper.style.display = visible ? 'none' : 'block';
+      if (!visible) {
+        noteEl.focus();
+      }
+    };
+
+    noteEl.oninput = () => {
+      localStorage.setItem(NOTE_KEY_PREFIX + p.id, noteEl.value);
+      updateNoteHint(p.id, !!noteEl.value.trim());
+    };
+
+    const tel=el('#dlg_tel');
+    if(p.phone){ tel.style.display='inline-flex'; tel.href='tel:'+p.phone; }
+    else tel.style.display='none';
+    const mail=el('#dlg_mail');
+    if(p.email){ mail.style.display='inline-flex'; mail.href='mailto:'+p.email; }
+    else mail.style.display='none';
+    document.getElementById('dlg').showModal();
+  }
+
+  function render(){
+    const q=state.q;
+    const cities=[...state.cities];
+    const skills=[...state.skills];
+    const orgTags=[...state.orgs];
+
+    const out=DATA.filter(p =>{
+      const orgText = (p.org || "").toLowerCase();
+
+      const orgMatch = orgTags.length
+        ? orgTags.some(tag => orgText.includes(tag.toLowerCase()))
+        : true;
+
+      return (
+        textMatch(q,p.name,p.org,p.role,p.notes,p.city,(p.expertise||[]).join(', ')) &&
+        (cities.length?cities.includes(p.city):true) &&
+        (skills.length?includesAll(skills,p.expertise||[]):true) &&
+        orgMatch
+      );
+    });
+
+    resultsEl.innerHTML='';
+
+    if(out.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'card person visible';
+      empty.innerHTML = `
+        <div class="inner">
+          <div class="row" style="align-items:flex-start">
+            <div class="k">🔎</div>
+            <div class="stack">
+              <div style="font-weight:600;">Geen resultaten</div>
+              <div class="tiny">
+                Pas je zoekwoord, plaats, expertise(s) of organisatie aan om iemand te vinden.
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      resultsEl.appendChild(empty);
+    } else {
+      out.forEach(p=>{
+        const c = card(p);
+        resultsEl.appendChild(c);
+        const stored = localStorage.getItem(NOTE_KEY_PREFIX + p.id);
+        updateNoteHint(p.id, !!(stored && stored.trim()));
+      });
+
+      requestAnimationFrame(() => {
+        resultsEl.querySelectorAll('.card.person').forEach((card, i) => {
+          card.style.transitionDelay = `${i * 35}ms`;
+          card.classList.add('visible');
+        });
+      });
+    }
+
+    const label = out.length === 1 ? 'resultaat' : 'resultaten';
+    countEl.textContent = `${out.length} ${label}`;
+    countEl.classList.remove('pulse');
+    void countEl.offsetWidth;
+    countEl.classList.add('pulse');
+
+    activeFiltersEl.innerHTML = '';
+    const citiesArr=[...state.cities];
+    const skillsArr=[...state.skills];
+    const orgArr=[...state.orgs];
+    const hasFilters =
+      state.q.trim() || citiesArr.length || skillsArr.length || orgArr.length;
+
+    if (hasFilters) {
+      const labelEl = document.createElement('strong');
+      labelEl.textContent = 'Actieve filters:';
+      activeFiltersEl.appendChild(labelEl);
+    }
+
+    const addFilterChip = (type, value, labelText) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'filter-chip';
+      chip.dataset.filterType = type;
+      chip.dataset.filterValue = value;
+      chip.innerHTML = `${labelText} <span aria-hidden="true">×</span>`;
+      activeFiltersEl.appendChild(chip);
+    };
+
+    if (state.q.trim()) {
+      addFilterChip('q', '', `Zoekterm: “${state.q.trim()}”`);
+    }
+    citiesArr.forEach(city => addFilterChip('city', city, city));
+    skillsArr.forEach(skill => addFilterChip('skill', skill, skill));
+    if (orgArr.length){
+      orgArr.forEach(key => {
+        const label = (ORGANISATIONS.find(o => o.key === key)?.label || key);
+        addFilterChip('org', key, label);
+      });
+    }
+
+    buildFilters();
+    updateMapCities();
+  }
+
+  function applyTheme(theme){
+    const body = document.body;
+    if(theme === 'light'){
+      body.classList.add('light');
+    } else {
+      body.classList.remove('light');
+    }
+  }
+
+  document.getElementById('clearBtn').onclick=()=>{
+    state.q='';
+    state.cities=new Set();
+    state.skills=new Set();
+    state.orgs=new Set();
+    qEl.value='';
+    render();
+    const cardEl = document.getElementById('filtersCard');
+    if(cardEl){
+      cardEl.classList.remove('resetting');
+      void cardEl.offsetWidth;
+      cardEl.classList.add('resetting');
+    }
+  };
+
+  qEl.addEventListener('input',e=>{
+    state.q=e.target.value;
+    render();
+  });
+
+  qEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const firstCard = resultsEl.querySelector('.card.person');
+      if (firstCard) firstCard.click();
+    }
+  });
+
+  activeFiltersEl.addEventListener('click', e => {
+    const btn = e.target.closest('.filter-chip');
+    if (!btn) return;
+    const type = btn.dataset.filterType;
+    const value = btn.dataset.filterValue;
+    if (type === 'q') {
+      state.q = '';
+      qEl.value = '';
+    } else if (type === 'city') {
+      state.cities.delete(value);
+    } else if (type === 'skill') {
+      state.skills.delete(value);
+    } else if (type === 'org') {
+      state.orgs.delete(value);
+    }
+    render();
+  });
+
+  document.querySelectorAll('.city').forEach(cityEl=>{
+    cityEl.addEventListener('click',()=>{
+      const cityName = cityEl.dataset.city;
+      toggleSet(state.cities, cityName);
+    });
+  });
+
+  const themeToggle = el('#themeToggle');
+  let currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
+  applyTheme(currentTheme);
+
+  themeToggle.addEventListener('click', () => {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    localStorage.setItem(THEME_KEY, currentTheme);
+    applyTheme(currentTheme);
+    render();
+  });
+
+  document.addEventListener('keydown', e => {
+    const dlg = document.getElementById('dlg');
+    if (e.key === 'Escape' && dlg.open) {
+      dlg.close();
+    }
+  });
+
+  document.getElementById('stamp').textContent=new Date().toLocaleString('nl-NL');
+  render();
+</script>
+</body>
+</html>
+
