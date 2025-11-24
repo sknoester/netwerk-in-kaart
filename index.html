@@ -117,16 +117,29 @@
       line-height:1.4;
     }
 
+    /* ========= Zoek / intro layout ========= */
+
+    /* Mobiel: intro boven zoekbalk */
     .filters-search-row{
       display:flex;
       flex-direction:column;
       gap:8px;
     }
-    .search-block{width:100%}
+
+    .search-block{
+      width:100%;
+      order:1;            /* onder intro-block */
+    }
 
     .search-block > .row:first-child { margin-bottom:10px !important; }
 
-    .intro-block{ margin-top:8px; }
+    .intro-block{
+      margin-top:8px;
+      order:0;            /* boven search-block */
+      text-align:left;
+    }
+
+    /* Desktop: naast elkaar, zoek links – intro rechts */
     @media(min-width:900px){
       .filters-search-row{
         flex-direction:row;
@@ -134,26 +147,60 @@
         justify-content:space-between;
         gap:16px;
       }
-      .search-block{ flex:1; min-width:0; }
-      .intro-block{ max-width:320px; flex-shrink:0; text-align:right; }
+
+      .search-block{
+        flex:0 0 58%;
+        min-width:0;
+        order:0;
+      }
+
+      .intro-block{
+        flex:0 0 38%;
+        max-width:none;
+        flex-shrink:0;
+        text-align:right;
+        margin-top:0;
+        order:0;
+      }
     }
 
+    /* ========= Logo-rij ========= */
+
+    /* Mobiel: logo's verbergen */
     .intro-logos-row{
       margin-top:10px;
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
-      gap:10px;
-      opacity:0.7;
-      filter:saturate(1.1) brightness(1.05);
+      display:none;
     }
+
+    /* Desktop: logo's tonen in één rij */
+    @media(min-width:900px){
+      .intro-logos-row{
+        margin-top:10px;
+        display:flex;
+        flex-wrap:nowrap;
+        justify-content:flex-end;
+        align-items:center;
+        gap:10px;
+        opacity:0.7;
+        filter:saturate(1.1) brightness(1.05);
+      }
+    }
+
     .intro-logos-row img{
-      height:30px;
+      height:26px;
       width:auto;
       display:block;
       flex-shrink:0;
     }
+
+    /* Specifieke fix voor Oostvaarderskliniek-logo */
+    .intro-logos-row img[src*="logo-oostvaarderskliniek"] {
+      height: 15px;
+      max-width: 65px;
+      object-fit: contain;
+      margin-right: 4px;
+    }
+
     body.light .intro-logos-row{
       opacity:0.85;
       mix-blend-mode:multiply;
@@ -499,12 +546,13 @@
             <h1 class="intro-title">Netwerk Bemoeizorg Flevoland</h1>
             <p class="intro-text">Vind snel collega’s op naam, organisatie, expertise of gemeente.</p>
             <div class="intro-logos-row" aria-hidden="true">
-              <img src="./logos/logo-legerdesheils.png" alt="">
-              <img src="./logos/logo-triadevitree.png" alt="">
-              <img src="./logos/logo-amethist.png" alt="">
-              <img src="./logos/logo-kwintes.png" alt="">
-              <img src="./logos/logo-ggd-flevoland.png" alt="">
-              <img src="./logos/logo-ggz-centraal.png" alt="">
+              <img src="./logos/logo-oostvaarderskliniek.png" alt="Oostvaarderskliniek">
+              <img src="./logos/logo-legerdesheils.png" alt="Leger des Heils">
+              <img src="./logos/logo-triadevitree.png" alt="Triade Vitree">
+              <img src="./logos/logo-amethist.png" alt="Amethist">
+              <img src="./logos/logo-kwintes.png" alt="Kwintes">
+              <img src="./logos/logo-ggd-flevoland.png" alt="GGD Flevoland">
+              <img src="./logos/logo-ggz-centraal.png" alt="GGZ Centraal">
             </div>
           </div>
 
@@ -641,15 +689,15 @@
   ];
 
   const ORGANISATIONS = [
-    { key: "GGD",             label: "GGD Flevoland",        abbr: "GGD", logo: "./logos/logo-ggd-flevoland.png" },
-    { key: "Leger des Heils", label: "Leger des Heils",      abbr: "LDH", logo: "./logos/logo-legerdesheils.png" },
-    { key: "Kwintes",         label: "Kwintes",              abbr: "KW",  logo: "./logos/logo-kwintes.png" },
-    { key: "Triade Vitree",   label: "Triade Vitree",        abbr: "TV",  logo: "./logos/logo-triadevitree.png" },
-    { key: "GGZ Centraal",    label: "GGZ Centraal",         abbr: "GGZ", logo: "./logos/logo-ggz-centraal.png" },
-    { key: "Amethist",        label: "Amethist",             abbr: "AM",  logo: "./logos/logo-amethist.png" },
-    { key: "ForFact",         label: "ForFact",              abbr: "FF"  },
-    { key: "wijkteam",        label: "Wijkteam",             abbr: "WT"  },
-    { key: "politie",         label: "Politie",              abbr: "POL" }
+    { key: "GGD",               label: "GGD Flevoland",        abbr: "GGD", logo: "./logos/logo-ggd-flevoland.png" },
+    { key: "Leger des Heils",   label: "Leger des Heils",      abbr: "LDH", logo: "./logos/logo-legerdesheils.png" },
+    { key: "Kwintes",           label: "Kwintes",              abbr: "KW",  logo: "./logos/logo-kwintes.png" },
+    { key: "Triade Vitree",     label: "Triade Vitree",        abbr: "TV",  logo: "./logos/logo-triadevitree.png" },
+    { key: "GGZ Centraal",      label: "GGZ Centraal",         abbr: "GGZ", logo: "./logos/logo-ggz-centraal.png" },
+    { key: "Amethist",          label: "Amethist",             abbr: "AM",  logo: "./logos/logo-amethist.png" },
+    { key: "ForFact",           label: "ForFact",              abbr: "FF",  logo: "./logos/logo-oostvaarderskliniek.png" },
+    { key: "wijkteam",          label: "Wijkteam",             abbr: "WT"  },
+    { key: "politie",           label: "Politie",              abbr: "POL" }
   ];
 
   function findOrgMeta(orgName) {
@@ -709,11 +757,20 @@
   // Helper: lokale notitie ophalen
   const getLocalNote = (id) => localStorage.getItem(NOTE_KEY_PREFIX + id) || "";
 
-  const textMatch = (q,...fields)=>{
-    if(!q.trim()) return true;
-    const t=q.toLowerCase();
-    return fields.some(f=>(f||'').toLowerCase().includes(t));
+  // ✅ Cumulatieve zoekfunctie: elk woord moet in minstens één veld voorkomen
+  const textMatch = (q, ...fields) => {
+    const trimmed = q.trim();
+    if (!trimmed) return true;
+
+    const terms = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
+    const fieldTexts = fields.map(f => (f || '').toLowerCase());
+
+    // Elke term moet in ten minste één van de velden zitten
+    return terms.every(term =>
+      fieldTexts.some(text => text.includes(term))
+    );
   };
+
   const includesAll=(needles,haystack)=>
     needles.every(n=>(haystack||[]).map(h=>h.toLowerCase()).includes(n.toLowerCase()));
 
@@ -726,7 +783,7 @@
     const skillsEl = el('#skills'); skillsEl.innerHTML='';
     EXPERTISE.forEach(({key,icon,color})=>{
       const b=document.createElement('button');
-      b.className='chip'+(state.skills.has(key)?' active':'');
+      b.className='chip'+(state.skills.has(key)?' active':'' );
       b.textContent=`${icon} ${key}`;
       b.style.setProperty('--chip-color', color);
       b.type = 'button';
@@ -794,7 +851,7 @@
                 ${p.name}
               </div>
               <div class="muted" style="display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                ${orgMeta && orgMeta.logo ? `<img src="${orgMeta.logo}" alt="${orgMeta.label || ''}" class="org-logo-card">` : ''}
+                ${orgMeta && orgMeta.logo ? `<img src="${orgMeta.logo}" alt="${orgMeta.label || ''}" class="org-logo-card">` : '' }
                 <span>${p.org || ''}</span>
               </div>
             </div>
@@ -904,14 +961,13 @@
 
     const out=DATA.filter(p =>{
       const orgText = (p.org || "").toLowerCase();
-      const myNote  = getLocalNote(p.id); // << lokaal opslaan → zoeken
+      const myNote  = getLocalNote(p.id);
 
       const orgMatch = orgTags.length
         ? orgTags.some(tag => orgText.includes(tag.toLowerCase()))
         : true;
 
       return (
-        // zoeken in velden + eigen notitie
         textMatch(q,p.name,p.org,p.role,p.notes,p.city,(p.expertise||[]).join(', '), myNote) &&
         (cities.length?cities.includes(p.city):true) &&
         (skills.length?includesAll(skills,p.expertise||[]):true) &&
@@ -1028,10 +1084,10 @@
     render();
   });
 
+  // ✅ Enter in de zoekbalk opent niet meer automatisch de eerste kaart
   qEl.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      const firstCard = resultsEl.querySelector('.card.person');
-      if (firstCard) firstCard.click();
+      e.preventDefault(); // zoeken gebeurt live tijdens typen
     }
   });
 
@@ -1083,3 +1139,4 @@
 </script>
 </body>
 </html>
+
